@@ -1,0 +1,71 @@
+version: "3.8"
+
+# ─────────────────────────────────────────
+#  SERVICES
+# ─────────────────────────────────────────
+services:
+
+  # ── MySQL ────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-cours
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: Azerty123!
+      MYSQL_DATABASE:      cours_sql
+      MYSQL_USER:          etudiant
+      MYSQL_PASSWORD:      Etudiant456!
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+    networks:
+      - cours-network
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pAzerty123!"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── phpMyAdmin ────────────────────────
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin-cours
+    restart: unless-stopped
+
+    environment:
+      PMA_HOST:     mysql
+      PMA_PORT:     3306
+      PMA_USER:     root
+      PMA_PASSWORD: Azerty123!
+      UPLOAD_LIMIT: 100M
+
+    ports:
+      - "8080:80"
+
+    networks:
+      - cours-network
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+# ─────────────────────────────────────────
+#  VOLUMES
+# ─────────────────────────────────────────
+volumes:
+  mysql-data:
+    driver: local
+
+# ─────────────────────────────────────────
+#  RÉSEAUX
+# ─────────────────────────────────────────
+networks:
+  cours-network:
+    driver: bridge
