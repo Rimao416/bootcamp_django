@@ -1,0 +1,78 @@
+### Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+### Django
+*.log
+*.pot
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Django: collectstatic output (if different)
+static/
+
+### Virtual environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+### VSCode / IDE
+.vscode/
+.idea/
+*.code-workspace
+
+### OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+### Byte-compiled / cache
+*.pyo
+*.pyd
+*.pdb
+
+### Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+### Migrations (optional: uncomment if you don’t want to track them)
+*/migrations/__pycache__/
+*/migrations/*.py
+
+### Local settings / secrets
+*.env
+.venv
+*.venv
+.env.*
+*.local
+*.secret
+
+### Pip / packaging
+pip-log.txt
+pip-delete-this-directory.txt
+
+### MyPy / type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+### Other tools
+.pytest_cache/
+.tox/
+.cache/
+.ruff_cache/
+
