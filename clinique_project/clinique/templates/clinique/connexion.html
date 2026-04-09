@@ -1,0 +1,56 @@
+{% extends 'clinique/base.html' %}
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card p-4 mt-5">
+
+            <h3 class="text-center mb-4">
+                <i class="bi bi-lock"></i> Connexion
+            </h3>
+
+            <!--
+                action="" : soumet le formulaire vers la même URL
+                method="post" : envoie les données en POST (pas dans l'URL)
+            -->
+            <form action="" method="post">
+
+                <!--
+                    {% csrf_token %} : OBLIGATOIRE dans tout formulaire POST
+                    Django vérifie ce token pour se protéger des attaques CSRF
+                    Sans cette ligne, Django refusera le formulaire avec une erreur 403
+                -->
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Nom d'utilisateur</label>
+                    <input
+                        type="text"
+                        name="username"
+                        class="form-control"
+                        placeholder="Votre username"
+                        required
+                    >
+                    <!-- name="username" doit correspondre à request.POST.get('username') dans la vue -->
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mot de passe</label>
+                    <input
+                        type="password"
+                        name="password"
+                        class="form-control"
+                        placeholder="Votre mot de passe"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">
+                    <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

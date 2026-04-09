@@ -1,0 +1,44 @@
+{% extends 'clinique/base.html' %}
+{% block title %}{{ medecin }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card p-4 text-center">
+            {% if medecin.photo %}
+                <img src="{{ medecin.photo.url }}" class="rounded-circle mb-3"
+                     style="width:120px;height:120px;object-fit:cover;margin:auto">
+            {% else %}
+                <div class="rounded-circle bg-success text-white d-flex align-items-center
+                            justify-content-center mb-3"
+                     style="width:120px;height:120px;font-size:2.5rem;margin:auto">
+                    <i class="bi bi-person"></i>
+                </div>
+            {% endif %}
+            <h4>{{ medecin }}</h4>
+            <p class="text-muted">{{ medecin.user.email }}</p>
+            {% if medecin.telephone %}
+                <p><i class="bi bi-telephone"></i> {{ medecin.telephone }}</p>
+            {% endif %}
+            <a href="{% url 'prendre_rdv' medecin.pk %}" class="btn btn-success w-100 mt-2">
+                <i class="bi bi-calendar-plus"></i> Prendre rendez-vous
+            </a>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card p-4">
+            <h5 class="mb-3">Spécialités</h5>
+            {% for spec in specialites %}
+                <div class="mb-3">
+                    <span class="badge bg-success fs-6 px-3 py-2">{{ spec.nom }}</span>
+                    {% if spec.description %}
+                        <p class="text-muted mt-1 ms-1">{{ spec.description }}</p>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p class="text-muted">Aucune spécialité renseignée.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

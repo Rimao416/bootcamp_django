@@ -1,0 +1,47 @@
+{% extends 'clinique/base.html' %}
+{% block title %}Prendre rendez-vous{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h4 class="mb-1">
+                <i class="bi bi-calendar-plus"></i> Prendre rendez-vous
+            </h4>
+            <p class="text-muted mb-4">avec <strong>{{ medecin }}</strong></p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!--
+                    On affiche chaque champ du formulaire manuellement
+                    pour avoir un contrôle total sur le HTML produit
+                -->
+                {% for field in form %}
+                <div class="mb-3">
+                    <!-- field.label : le nom du champ (ex: "Date") -->
+                    <label class="form-label fw-semibold">{{ field.label }}</label>
+
+                    <!-- field : affiche le <input> HTML du champ -->
+                    {{ field }}
+
+                    <!-- field.errors : erreurs de validation pour ce champ -->
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-success flex-fill">
+                        <i class="bi bi-check-lg"></i> Confirmer le rendez-vous
+                    </button>
+                    <a href="{% url 'liste_medecins' %}" class="btn btn-outline-secondary">
+                        Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

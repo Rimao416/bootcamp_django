@@ -1,0 +1,80 @@
+{% extends 'clinique/base.html' %}
+{% block title %}Nos médecins{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-person-badge"></i> Nos médecins</h2>
+
+    <!-- Formulaire de recherche — method="get" : les données passent dans l'URL -->
+    <!-- ex : /medecins/?q=cardiologie -->
+    <form method="get" class="d-flex gap-2">
+        <input
+            type="text"
+            name="q"
+            value="{{ recherche }}"
+            class="form-control"
+            placeholder="Rechercher par spécialité..."
+        >
+        <button type="submit" class="btn btn-success">
+            <i class="bi bi-search"></i>
+        </button>
+        {% if recherche %}
+            <!-- Lien pour effacer la recherche -->
+            <a href="{% url 'liste_medecins' %}" class="btn btn-outline-secondary">✕</a>
+        {% endif %}
+    </form>
+</div>
+
+{% if recherche %}
+    <p class="text-muted mb-3">
+        Résultats pour "<strong>{{ recherche }}</strong>" —
+        {{ medecins.count }} médecin(s) trouvé(s)
+    </p>
+{% endif %}
+
+<div class="row g-4">
+    {% for medecin in medecins %}
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ medecin }}</h5>
+
+                <!-- Spécialités du médecin sous forme de badges -->
+                <div class="mb-2">
+                    {% for spec in medecin.specialites.all %}
+                        <span class="badge bg-success me-1">{{ spec.nom }}</span>
+                    {% empty %}
+                        <span class="text-muted small">Aucune spécialité renseignée</span>
+                    {% endfor %}
+                </div>
+
+                {% if medecin.telephone %}
+                    <p class="text-muted small mb-1">
+                        <i class="bi bi-telephone"></i> {{ medecin.telephone }}
+                    </p>
+                {% endif %}
+            </div>
+
+            <div class="card-footer bg-transparent d-flex gap-2">
+                <a href="{% url 'detail_medecin' medecin.pk %}"
+                   class="btn btn-outline-success btn-sm flex-fill">
+                    <i class="bi bi-eye"></i> Voir le profil
+                </a>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'prendre_rdv' medecin.pk %}"
+                   class="btn btn-success btn-sm flex-fill">
+                    <i class="bi bi-calendar-plus"></i> Rendez-vous
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <div class="col">
+            <p class="text-muted">Aucun médecin trouvé.</p>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

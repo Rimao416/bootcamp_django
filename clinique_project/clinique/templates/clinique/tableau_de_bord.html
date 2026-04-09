@@ -1,0 +1,121 @@
+{% extends 'clinique/base.html' %}
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    <i class="bi bi-grid"></i> Tableau de bord
+</h2>
+
+<!-- On affiche un contenu différent selon le rôle -->
+{% if role == 'medecin' %}
+
+    <div class="alert alert-success">
+        Bonjour Docteur <strong>{{ medecin }}</strong> —
+        vous avez <strong>{{ rdv_a_venir.count }}</strong> rendez-vous à venir.
+    </div>
+
+    <h5 class="mb-3">Mes prochains rendez-vous</h5>
+
+    {% if rdv_a_venir %}
+        {% for rdv in rdv_a_venir %}
+        <div class="card mb-3">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ rdv.patient }}</strong>
+                    <br>
+                    <small class="text-muted">
+                        <i class="bi bi-calendar"></i> {{ rdv.date }}
+                        &nbsp;|&nbsp;
+                        <i class="bi bi-clock"></i> {{ rdv.heure }}
+                        &nbsp;|&nbsp;
+                        {{ rdv.motif }}
+                    </small>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <span class="badge badge-{{ rdv.statut }} text-white px-3 py-2">
+                        {{ rdv.get_statut_display }}
+                    </span>
+                    <!-- {% url 'detail_rdv' rdv.pk %} : génère /rdv/5/ -->
+                    <a href="{% url 'detail_rdv' rdv.pk %}" class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-eye"></i> Voir
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">Aucun rendez-vous à venir.</p>
+    {% endif %}
+
+{% elif role == 'patient' %}
+
+    <div class="alert alert-primary">
+        Bonjour <strong>{{ patient }}</strong> —
+        <a href="{% url 'liste_medecins' %}" class="alert-link">Prendre un nouveau rendez-vous</a>
+    </div>
+
+    <!-- Onglets Bootstrap -->
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#a-venir">
+                À venir ({{ rdv_a_venir.count }})
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#passes">
+                Passés ({{ rdv_passes.count }})
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <div class="tab-pane fade show active" id="a-venir">
+            {% for rdv in rdv_a_venir %}
+            <div class="card mb-2">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ rdv.medecin }}</strong>
+                        <br>
+                        <small class="text-muted">
+                            {{ rdv.date }} à {{ rdv.heure }} — {{ rdv.motif }}
+                        </small>
+                    </div>
+                    <span class="badge badge-{{ rdv.statut }} text-white px-3 py-2">
+                        {{ rdv.get_statut_display }}
+                    </span>
+                </div>
+            </div>
+            {% empty %}
+                <!-- {% empty %} : affiché si la boucle for est vide -->
+                <p class="text-muted mt-3">Aucun rendez-vous à venir.</p>
+            {% endfor %}
+        </div>
+
+        <div class="tab-pane fade" id="passes">
+            {% for rdv in rdv_passes %}
+            <div class="card mb-2">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ rdv.medecin }}</strong>
+                        <br>
+                        <small class="text-muted">{{ rdv.date }} — {{ rdv.motif }}</small>
+                    </div>
+                    <a href="{% url 'detail_rdv' rdv.pk %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-file-medical"></i> Consultation
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+                <p class="text-muted mt-3">Aucun rendez-vous passé.</p>
+            {% endfor %}
+        </div>
+
+    </div>
+
+{% else %}
+    <p class="text-muted">Votre compte n'est pas encore lié à un profil.</p>
+{% endif %}
+
+{% endblock %}

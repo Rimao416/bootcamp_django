@@ -1,0 +1,93 @@
+<!-- {% extends %} : ce template hérite de base.html -->
+<!-- Il va "remplir" les blocs définis dans base.html -->
+{% extends 'clinique/base.html' %}
+
+{% block title %}Accueil — Clinique{% endblock %}
+
+{% block content %}
+
+<!-- Bannière hero -->
+<div class="p-5 mb-4 rounded-3 text-white" style="background-color: #1a6b4a;">
+    <h1 class="display-5 fw-bold">
+        <i class="bi bi-heart-pulse"></i> Bienvenue à la Clinique
+    </h1>
+    <p class="lead">Prenez soin de votre santé. Prenez rendez-vous en ligne.</p>
+
+    {% if not request.user.is_authenticated %}
+        <a href="{% url 'connexion' %}" class="btn btn-light btn-lg">
+            <i class="bi bi-box-arrow-in-right"></i> Se connecter
+        </a>
+    {% else %}
+        <a href="{% url 'tableau_de_bord' %}" class="btn btn-light btn-lg">
+            <i class="bi bi-grid"></i> Mon tableau de bord
+        </a>
+    {% endif %}
+</div>
+
+<!-- Statistiques -->
+<div class="row g-4 mb-5">
+
+    <!-- g-4 : espacement de 4 entre les colonnes (gutter) -->
+    <div class="col-md-4">
+        <div class="card text-center p-4">
+            <div class="display-4 fw-bold text-success">{{ nb_medecins }}</div>
+            <div class="text-muted mt-1">
+                <i class="bi bi-person-badge"></i> Médecins
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-center p-4">
+            <div class="display-4 fw-bold text-primary">{{ nb_patients }}</div>
+            <div class="text-muted mt-1">
+                <i class="bi bi-people"></i> Patients
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-center p-4">
+            <div class="display-4 fw-bold text-warning">{{ nb_rdv }}</div>
+            <div class="text-muted mt-1">
+                <i class="bi bi-calendar-check"></i> Rendez-vous
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Derniers rendez-vous -->
+{% if derniers_rdv %}
+<h4 class="mb-3">Derniers rendez-vous</h4>
+<div class="card">
+    <ul class="list-group list-group-flush">
+
+        <!-- {% for %} : boucle sur la liste derniers_rdv -->
+        {% for rdv in derniers_rdv %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>{{ rdv.patient }}</strong>
+                avec <strong>{{ rdv.medecin }}</strong>
+                <br>
+                <small class="text-muted">
+                    <i class="bi bi-calendar"></i> {{ rdv.date }}
+                    à {{ rdv.heure }}
+                </small>
+            </div>
+            <!-- badge-{{ rdv.statut }} utilise nos classes CSS définies dans base.html -->
+            <span class="badge badge-{{ rdv.statut }} text-white px-3 py-2">
+                {{ rdv.get_statut_display }}
+            </span>
+            <!--
+                .get_statut_display : méthode automatique de Django
+                pour les champs "choices". Elle retourne le deuxième
+                élément du tuple — ex: 'planifie' → 'Planifié'
+            -->
+        </li>
+        {% endfor %}
+
+    </ul>
+</div>
+{% endif %}
+
+{% endblock %}
