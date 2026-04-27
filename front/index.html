@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Users CRUD — V1</title>
+    <title>Users CRUD — V3</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap"
         rel="stylesheet" />
@@ -26,6 +26,17 @@
             --border-light: rgba(0, 0, 0, 0.08);
             --border-medium: rgba(0, 0, 0, 0.15);
             --border-strong: rgba(0, 0, 0, 0.25);
+            --danger: #c0392b;
+            --danger-bg: #fdf0ef;
+            --danger-border: #e8b4b0;
+            --success-bg: #e8f5e9;
+            --success-text: #2e7d32;
+            --info-bg: #e8f0fe;
+            --info-text: #1a56db;
+            --warn-bg: #fff3e0;
+            --warn-text: #e65100;
+            --purple-bg: #ede7f6;
+            --purple-text: #4527a0;
         }
 
         body {
@@ -35,6 +46,7 @@
             min-height: 100vh;
         }
 
+        /* ── VIEWS ── */
         .view {
             display: none;
         }
@@ -62,6 +74,12 @@
             gap: 10px;
         }
 
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .logo-dot {
             width: 8px;
             height: 8px;
@@ -76,15 +94,8 @@
             text-transform: uppercase;
         }
 
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         .sep {
             color: var(--border-medium);
-            margin: 0 2px;
         }
 
         /* ── BUTTONS ── */
@@ -101,11 +112,16 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             cursor: pointer;
-            transition: background 0.12s;
+            transition: background 0.12s, opacity 0.12s;
         }
 
         .btn:hover {
             background: var(--bg-secondary);
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
         }
 
         .btn-primary {
@@ -128,12 +144,17 @@
         }
 
         .btn-danger {
-            color: #c0392b;
-            border-color: #e8b4b0;
+            color: var(--danger);
+            border-color: var(--danger-border);
         }
 
         .btn-danger:hover {
-            background: #fdf0ef;
+            background: var(--danger-bg);
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
         }
 
         /* ── PAGE HEADER ── */
@@ -281,8 +302,8 @@
             justify-content: center;
             font-size: 11px;
             font-weight: 500;
-            background: #e8f0fe;
-            color: #1a56db;
+            background: var(--info-bg);
+            color: var(--info-text);
             flex-shrink: 0;
         }
 
@@ -301,8 +322,8 @@
             justify-content: center;
             font-size: 20px;
             font-weight: 500;
-            background: #e8f0fe;
-            color: #1a56db;
+            background: var(--info-bg);
+            color: var(--info-text);
         }
 
         /* ── BADGES ── */
@@ -316,8 +337,8 @@
         }
 
         .badge-active {
-            background: #e8f5e9;
-            color: #2e7d32;
+            background: var(--success-bg);
+            color: var(--success-text);
         }
 
         .badge-inactive {
@@ -326,8 +347,8 @@
         }
 
         .badge-admin {
-            background: #ede7f6;
-            color: #4527a0;
+            background: var(--purple-bg);
+            color: var(--purple-text);
         }
 
         .badge-user {
@@ -335,15 +356,92 @@
             color: var(--text-secondary);
         }
 
-        .badge-mod {
-            background: #fff3e0;
-            color: #e65100;
+        .badge-moderator {
+            background: var(--warn-bg);
+            color: var(--warn-text);
         }
 
         /* ── ROW ACTIONS ── */
         .row-actions {
             display: flex;
             gap: 4px;
+        }
+
+        /* ── SKELETON ── */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
+            background-size: 200%;
+            animation: shimmer 1.3s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200%
+            }
+
+            100% {
+                background-position: -200%
+            }
+        }
+
+        .sk-row td {
+            padding: 15px 18px;
+        }
+
+        .sk-line {
+            height: 13px;
+        }
+
+        .sk-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .sk-short {
+            width: 60px;
+        }
+
+        .sk-med {
+            width: 120px;
+        }
+
+        .sk-long {
+            width: 180px;
+        }
+
+        /* ── EMPTY / ERROR STATE ── */
+        .state-box {
+            padding: 56px 24px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .state-box strong {
+            display: block;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        /* ── PAGINATION ── */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            border-top: 0.5px solid var(--border-light);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 6px;
         }
 
         /* ── DETAIL VIEW ── */
@@ -375,11 +473,6 @@
             font-size: 15px;
             font-weight: 500;
             text-align: center;
-        }
-
-        .card-role-label {
-            font-size: 12px;
-            color: var(--text-secondary);
         }
 
         .card-body {
@@ -418,7 +511,6 @@
             gap: 16px;
         }
 
-        /* ── STATS ── */
         .stat-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -447,12 +539,11 @@
         }
 
         .stat-value-sm {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
             margin-top: 4px;
         }
 
-        /* ── ACTIVITY ── */
         .section-head {
             padding: 16px 20px 12px;
             border-bottom: 0.5px solid var(--border-light);
@@ -463,38 +554,31 @@
             color: var(--text-secondary);
         }
 
-        .activity-list {
+        .meta-list {
             list-style: none;
         }
 
-        .activity-item {
+        .meta-item {
             display: flex;
-            gap: 12px;
-            align-items: flex-start;
+            justify-content: space-between;
+            align-items: center;
             padding: 11px 20px;
             border-bottom: 0.5px solid var(--border-light);
             font-size: 13px;
         }
 
-        .activity-item:last-child {
+        .meta-item:last-child {
             border-bottom: none;
         }
 
-        .activity-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--text-secondary);
-            margin-top: 5px;
-            flex-shrink: 0;
+        .meta-key {
+            color: var(--text-secondary);
+            font-size: 12px;
         }
 
-        .activity-time {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-left: auto;
-            white-space: nowrap;
+        .meta-val {
             font-family: 'DM Mono', monospace;
+            font-size: 12px;
         }
 
         /* ── FORM ── */
@@ -512,10 +596,6 @@
         .form-section {
             padding: 20px 24px;
             border-bottom: 0.5px solid var(--border-light);
-        }
-
-        .form-section:last-of-type {
-            border-bottom: none;
         }
 
         .form-section-title {
@@ -549,6 +629,11 @@
             color: var(--text-secondary);
         }
 
+        .form-label .req {
+            color: var(--danger);
+            margin-left: 2px;
+        }
+
         .form-input,
         .form-select,
         .form-textarea {
@@ -569,6 +654,17 @@
             border-color: var(--text-primary);
         }
 
+        .form-input.error,
+        .form-select.error {
+            border-color: var(--danger);
+        }
+
+        .form-error {
+            font-size: 11px;
+            color: var(--danger);
+            margin-top: 2px;
+        }
+
         .form-textarea {
             resize: vertical;
             min-height: 80px;
@@ -582,7 +678,124 @@
             border-top: 0.5px solid var(--border-light);
         }
 
-        /* ── BOTTOM SPACING ── */
+        /* ── TOAST ── */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            animation: slideIn 0.2s ease;
+            min-width: 240px;
+            max-width: 360px;
+        }
+
+        .toast.success {
+            background: #1a3d1f;
+        }
+
+        .toast.error {
+            background: #3d1a1a;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(12px);
+                opacity: 0
+            }
+
+            to {
+                transform: none;
+                opacity: 1
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(4px)
+            }
+        }
+
+        .toast.removing {
+            animation: fadeOut 0.2s ease forwards;
+        }
+
+        /* ── CONFIRM MODAL ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-primary);
+            border: 0.5px solid var(--border-light);
+            border-radius: 12px;
+            padding: 28px;
+            max-width: 380px;
+            width: 100%;
+            margin: 16px;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .modal-body {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        /* ── SPINNER ── */
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         .spacer {
             height: 40px;
         }
@@ -591,9 +804,25 @@
 
 <body>
 
+    <!-- ════════════ TOAST ════════════ -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ════════════ CONFIRM MODAL ════════════ -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <div class="modal-title">Supprimer l'utilisateur</div>
+            <div class="modal-body" id="confirmModalBody">Cette action est irréversible.</div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeModal()">Annuler</button>
+                <button class="btn btn-danger" id="confirmModalBtn" onclick="confirmDelete()">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- ════════════════════════════════════
-       VIEW — LISTE
-  ════════════════════════════════════ -->
+     VIEW — LISTE
+════════════════════════════════════ -->
     <div class="view active" id="view-list">
         <nav class="topbar">
             <div class="topbar-left">
@@ -607,18 +836,19 @@
 
         <div class="page-header">
             <div>
-                <h1 class="page-title">Utilisateurs <span class="count-badge">6</span></h1>
+                <h1 class="page-title">Utilisateurs <span class="count-badge" id="totalBadge">—</span></h1>
                 <p class="page-subtitle">Gérez les comptes et les accès</p>
             </div>
             <div class="tab-nav">
-                <button class="tab-btn active">Tous</button>
-                <button class="tab-btn">Actifs</button>
-                <button class="tab-btn">Admins</button>
+                <button class="tab-btn active" data-status="" onclick="setStatusFilter(this, '')">Tous</button>
+                <button class="tab-btn" data-status="ACTIVE" onclick="setStatusFilter(this, 'ACTIVE')">Actifs</button>
+                <button class="tab-btn" data-status="INACTIVE"
+                    onclick="setStatusFilter(this, 'INACTIVE')">Inactifs</button>
             </div>
         </div>
 
         <div class="search-bar">
-            <input class="search-input" type="text" placeholder="Rechercher par nom, email ou rôle…" />
+            <input class="search-input" id="searchInput" type="text" placeholder="Rechercher par nom ou email…" />
         </div>
 
         <div class="table-wrap">
@@ -633,102 +863,107 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tbody id="user-list"></tbody>
+                <tbody id="userTableBody"></tbody>
             </table>
+            <div id="tableState"></div>
+            <div class="pagination" id="paginationBar" style="display:none">
+                <span id="paginationInfo"></span>
+                <div class="pagination-controls">
+                    <button class="btn btn-sm" id="prevBtn" onclick="changePage(-1)">← Préc.</button>
+                    <button class="btn btn-sm" id="nextBtn" onclick="changePage(1)">Suiv. →</button>
+                </div>
+            </div>
         </div>
     </div>
 
 
     <!-- ════════════════════════════════════
-       VIEW — DÉTAIL
-  ════════════════════════════════════ -->
+     VIEW — DÉTAIL
+════════════════════════════════════ -->
     <div class="view" id="view-detail">
         <nav class="topbar">
             <div class="topbar-left">
                 <button class="btn btn-ghost" onclick="showView('view-list')">← Retour</button>
                 <span class="sep">|</span>
-                <span class="logo-text" id="detail-breadcrumb">Utilisateur</span>
+                <span class="logo-text" id="detailBreadcrumb">Utilisateur</span>
             </div>
             <div class="topbar-right">
-                <button class="btn">Modifier</button>
-                <button class="btn btn-danger">Supprimer</button>
+                <button class="btn btn-danger" id="detailDeleteBtn" onclick="askDelete()">Supprimer</button>
             </div>
         </nav>
 
         <div class="page-header">
             <div>
-                <h1 class="page-title" id="detail-name">—</h1>
-                <p class="page-subtitle" id="detail-email-header">—</p>
+                <h1 class="page-title" id="detailName">—</h1>
+                <p class="page-subtitle" id="detailEmailHeader">—</p>
             </div>
         </div>
 
-        <div class="detail-wrap">
-            <!-- Sidebar profil -->
+        <div class="detail-wrap" id="detailWrap">
+            <!-- Sidebar -->
             <div class="card">
                 <div class="card-header">
-                    <div class="avatar-lg" id="detail-avatar-lg">—</div>
-                    <div class="card-name" id="detail-card-name">—</div>
-                    <span class="card-role-label" id="detail-card-role"></span>
+                    <div class="avatar-lg" id="detailAvatarLg">—</div>
+                    <div class="card-name" id="detailCardName">—</div>
+                    <span id="detailCardRole"></span>
                 </div>
                 <div class="card-body">
                     <div class="field-row">
                         <div class="field-label">Email</div>
-                        <div class="field-value field-mono" id="detail-email">—</div>
+                        <div class="field-value field-mono" id="detailEmail">—</div>
                     </div>
                     <div class="field-row">
                         <div class="field-label">Rôle</div>
-                        <div class="field-value" id="detail-role">—</div>
+                        <div class="field-value" id="detailRole">—</div>
                     </div>
                     <div class="field-row">
                         <div class="field-label">Statut</div>
-                        <div class="field-value" id="detail-status">—</div>
-                    </div>
-                    <div class="field-row">
-                        <div class="field-label">Membre depuis</div>
-                        <div class="field-value" id="detail-created">—</div>
+                        <div class="field-value" id="detailStatus">—</div>
                     </div>
                     <div class="field-row">
                         <div class="field-label">Localisation</div>
-                        <div class="field-value" id="detail-location">—</div>
+                        <div class="field-value" id="detailLocation">—</div>
+                    </div>
+                    <div class="field-row" id="detailNoteRow" style="display:none">
+                        <div class="field-label">Note</div>
+                        <div class="field-value" id="detailNote" style="font-size:12px;color:var(--text-secondary)">
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Contenu principal -->
+            <!-- Main -->
             <div class="card-main">
-                <!-- Stats -->
                 <div class="card">
                     <div class="stat-grid">
                         <div class="stat-card">
-                            <div class="stat-label">Sessions</div>
-                            <div class="stat-value" id="detail-sessions">—</div>
+                            <div class="stat-label">ID</div>
+                            <div class="stat-value-sm" id="detailId"
+                                style="font-family:'DM Mono',monospace;font-size:11px"></div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-label">Actions</div>
-                            <div class="stat-value" id="detail-actions">—</div>
+                            <div class="stat-label">Créé le</div>
+                            <div class="stat-value-sm" id="detailCreatedAt">—</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-label">Dernière connexion</div>
-                            <div class="stat-value-sm" id="detail-last-login">—</div>
+                            <div class="stat-label">Modifié le</div>
+                            <div class="stat-value-sm" id="detailUpdatedAt">—</div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Activité -->
                 <div class="card">
-                    <div class="section-head">Activité récente</div>
-                    <ul class="activity-list" id="detail-activity"></ul>
+                    <div class="section-head">Métadonnées</div>
+                    <ul class="meta-list" id="detailMeta"></ul>
                 </div>
             </div>
         </div>
-
         <div class="spacer"></div>
     </div>
 
 
     <!-- ════════════════════════════════════
-       VIEW — AJOUT
-  ════════════════════════════════════ -->
+     VIEW — AJOUT
+════════════════════════════════════ -->
     <div class="view" id="view-add">
         <nav class="topbar">
             <div class="topbar-left">
@@ -752,20 +987,23 @@
                     <div class="form-section-title">Informations personnelles</div>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">Prénom</label>
-                            <input class="form-input" type="text" placeholder="Jean" />
+                            <label class="form-label">Prénom <span class="req">*</span></label>
+                            <input class="form-input" id="f-firstName" type="text" placeholder="Jean" />
+                            <span class="form-error" id="e-firstName"></span>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Nom</label>
-                            <input class="form-input" type="text" placeholder="Dupont" />
+                            <label class="form-label">Nom <span class="req">*</span></label>
+                            <input class="form-input" id="f-lastName" type="text" placeholder="Dupont" />
+                            <span class="form-error" id="e-lastName"></span>
                         </div>
                         <div class="form-group full">
-                            <label class="form-label">Email</label>
-                            <input class="form-input" type="email" placeholder="jean.dupont@example.com" />
+                            <label class="form-label">Email <span class="req">*</span></label>
+                            <input class="form-input" id="f-email" type="email" placeholder="jean.dupont@example.com" />
+                            <span class="form-error" id="e-email"></span>
                         </div>
                         <div class="form-group full">
                             <label class="form-label">Localisation</label>
-                            <input class="form-input" type="text" placeholder="Paris, France" />
+                            <input class="form-input" id="f-location" type="text" placeholder="Paris, France" />
                         </div>
                     </div>
                 </div>
@@ -775,22 +1013,18 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Rôle</label>
-                            <select class="form-select">
-                                <option>Utilisateur</option>
-                                <option>Modérateur</option>
-                                <option>Admin</option>
+                            <select class="form-select" id="f-role">
+                                <option value="USER">Utilisateur</option>
+                                <option value="MODERATOR">Modérateur</option>
+                                <option value="ADMIN">Admin</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Statut initial</label>
-                            <select class="form-select">
-                                <option>Actif</option>
-                                <option>Inactif</option>
+                            <label class="form-label">Statut</label>
+                            <select class="form-select" id="f-status">
+                                <option value="ACTIVE">Actif</option>
+                                <option value="INACTIVE">Inactif</option>
                             </select>
-                        </div>
-                        <div class="form-group full">
-                            <label class="form-label">Mot de passe temporaire</label>
-                            <input class="form-input" type="password" placeholder="••••••••••" />
                         </div>
                     </div>
                 </div>
@@ -798,142 +1032,467 @@
                 <div class="form-section">
                     <div class="form-section-title">Note interne (optionnel)</div>
                     <div class="form-group">
-                        <textarea class="form-textarea"
-                            placeholder="Contexte, source de recrutement, remarques…"></textarea>
+                        <textarea class="form-textarea" id="f-note"
+                            placeholder="Contexte, source de recrutement…"></textarea>
                     </div>
                 </div>
 
                 <div class="form-footer">
                     <button class="btn" onclick="showView('view-list')">Annuler</button>
-                    <button class="btn btn-primary" onclick="showView('view-list')">Créer l'utilisateur</button>
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitCreate()">
+                        <span id="submitLabel">Créer l'utilisateur</span>
+                    </button>
                 </div>
-
             </div>
         </div>
-
         <div class="spacer"></div>
     </div>
 
 
     <!-- ════════════════════════════════════
-       JAVASCRIPT
-  ════════════════════════════════════ -->
+     JAVASCRIPT
+════════════════════════════════════ -->
     <script>
-        const users = [
-            {
-                id: 1, first: 'Amara', last: 'Diallo', email: 'amara.diallo@mail.com',
-                role: 'Admin', status: 'active', created: '12 jan. 2024', location: 'Abidjan, CI',
-                sessions: 142, actions: 318, lastLogin: 'Hier',
-                activity: ['Connexion depuis Chrome', 'Modifié les paramètres', 'Ajouté 3 utilisateurs', 'Export CSV lancé']
-            },
-            {
-                id: 2, first: 'Sophie', last: 'Martin', email: 's.martin@mail.com',
-                role: 'Utilisateur', status: 'active', created: '03 mar. 2024', location: 'Paris, FR',
-                sessions: 54, actions: 91, lastLogin: 'Il y a 2 j.',
-                activity: ['Connexion depuis Safari', 'Mis à jour son profil', 'Téléchargé un rapport']
-            },
-            {
-                id: 3, first: 'Elias', last: 'Kofi', email: 'e.kofi@mail.com',
-                role: 'Modérateur', status: 'active', created: '28 fév. 2024', location: 'Accra, GH',
-                sessions: 78, actions: 203, lastLogin: "Aujourd'hui",
-                activity: ['Connexion depuis Firefox', 'Modéré 12 contenus', 'Signalement traité']
-            },
-            {
-                id: 4, first: 'Lena', last: 'Müller', email: 'lena.m@mail.com',
-                role: 'Utilisateur', status: 'inactive', created: '07 avr. 2024', location: 'Berlin, DE',
-                sessions: 12, actions: 24, lastLogin: 'Il y a 14 j.',
-                activity: ['Connexion depuis Edge', 'Consulté le tableau de bord']
-            },
-            {
-                id: 5, first: 'Carlos', last: 'Reyes', email: 'c.reyes@mail.com',
-                role: 'Admin', status: 'active', created: '19 mai 2024', location: 'Bogotá, CO',
-                sessions: 209, actions: 541, lastLogin: "Aujourd'hui",
-                activity: ['Connexion depuis Chrome', 'Créé une campagne', 'Modifié 5 utilisateurs', 'Consulté les logs']
-            },
-            {
-                id: 6, first: 'Nadia', last: 'Okonkwo', email: 'n.okonkwo@mail.com',
-                role: 'Utilisateur', status: 'inactive', created: '02 juin 2024', location: 'Lagos, NG',
-                sessions: 7, actions: 11, lastLogin: 'Il y a 30 j.',
-                activity: ['Inscription', 'Profil complété']
-            }
-        ];
+        /* ─────────────────────────────────────────────────────────
+           CONFIG — change BASE_URL to match your backend
+        ───────────────────────────────────────────────────────── */
+        const BASE_URL = 'http://localhost:3000/api';
 
-        function initials(u) { return (u.first[0] + u.last[0]).toUpperCase(); }
+        /* ─────────────────────────────────────────────────────────
+           API CLIENT — single source of truth for all HTTP calls
+        ───────────────────────────────────────────────────────── */
+        const api = {
+            async request(method, path, body = null) {
+                const opts = {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                };
+                if (body) opts.body = JSON.stringify(body);
 
-        function roleBadge(r) {
-            const cls = r === 'Admin' ? 'badge-admin' : r === 'Modérateur' ? 'badge-mod' : 'badge-user';
-            return `<span class="badge ${cls}">${r}</span>`;
+                const res = await fetch(`${BASE_URL}${path}`, opts);
+                const data = await res.json();
+
+                if (!res.ok) {
+                    const err = new Error(data.message || 'Erreur réseau');
+                    err.status = res.status;
+                    err.data = data;
+                    throw err;
+                }
+                return data;
+            },
+
+            getUsers(params = {}) {
+                const qs = new URLSearchParams(
+                    Object.fromEntries(Object.entries(params).filter(([, v]) => v !== '' && v != null))
+                ).toString();
+                return this.request('GET', `/users${qs ? '?' + qs : ''}`);
+            },
+
+            getUserById(id) { return this.request('GET', `/users/${id}`); },
+            createUser(body) { return this.request('POST', '/users', body); },
+            updateUser(id, body) { return this.request('PATCH', `/users/${id}`, body); },
+            deleteUser(id) { return this.request('DELETE', `/users/${id}`); },
+        };
+
+        /* ─────────────────────────────────────────────────────────
+           STATE
+        ───────────────────────────────────────────────────────── */
+        const state = {
+            currentPage: 1,
+            limit: 10,
+            totalPages: 1,
+            total: 0,
+            statusFilter: '',
+            searchQuery: '',
+            currentUserId: null,
+            searchTimer: null,
+        };
+
+        /* ─────────────────────────────────────────────────────────
+           TOAST
+        ───────────────────────────────────────────────────────── */
+        function toast(message, type = 'info') {
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.textContent = message;
+            document.getElementById('toastContainer').appendChild(el);
+            setTimeout(() => {
+                el.classList.add('removing');
+                el.addEventListener('animationend', () => el.remove());
+            }, 3500);
         }
 
-        function statusBadge(s) {
-            return s === 'active'
+        /* ─────────────────────────────────────────────────────────
+           HELPERS — formatage
+        ───────────────────────────────────────────────────────── */
+        function initials(u) {
+            return ((u.firstName?.[0] ?? '') + (u.lastName?.[0] ?? '')).toUpperCase();
+        }
+
+        function fmtDate(iso) {
+            if (!iso) return '—';
+            return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(iso));
+        }
+
+        function fmtDatetime(iso) {
+            if (!iso) return '—';
+            return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+        }
+
+        function roleBadge(role) {
+            const map = {
+                ADMIN: ['badge-admin', 'Admin'],
+                MODERATOR: ['badge-moderator', 'Modérateur'],
+                USER: ['badge-user', 'Utilisateur'],
+            };
+            const [cls, label] = map[role] ?? ['badge-user', role];
+            return `<span class="badge ${cls}">${label}</span>`;
+        }
+
+        function statusBadge(status) {
+            return status === 'ACTIVE'
                 ? '<span class="badge badge-active">Actif</span>'
                 : '<span class="badge badge-inactive">Inactif</span>';
         }
 
-        function renderList() {
-            const tbody = document.getElementById('user-list');
-            const times = ['Il y a 1h', 'Il y a 3h', 'Hier 18:42', 'Hier 09:11'];
-            tbody.innerHTML = users.map(u => `
-        <tr onclick="showDetail(${u.id})">
-          <td>
-            <div class="avatar-wrap">
-              <div class="avatar">${initials(u)}</div>
-              <span class="td-name">${u.first} ${u.last}</span>
-            </div>
-          </td>
-          <td class="td-mono">${u.email}</td>
-          <td>${roleBadge(u.role)}</td>
-          <td>${statusBadge(u.status)}</td>
-          <td style="color:var(--text-secondary);font-size:12px">${u.created}</td>
-          <td>
-            <div class="row-actions" onclick="event.stopPropagation()">
-              <button class="btn" style="padding:5px 10px;font-size:12px" onclick="showDetail(${u.id})">Voir</button>
-              <button class="btn btn-danger" style="padding:5px 10px;font-size:12px">Suppr.</button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-        }
-
-        function showDetail(id) {
-            const u = users.find(x => x.id === id);
-            if (!u) return;
-
-            document.getElementById('detail-breadcrumb').textContent = u.first + ' ' + u.last;
-            document.getElementById('detail-name').textContent = u.first + ' ' + u.last;
-            document.getElementById('detail-email-header').textContent = u.email;
-            document.getElementById('detail-avatar-lg').textContent = initials(u);
-            document.getElementById('detail-card-name').textContent = u.first + ' ' + u.last;
-            document.getElementById('detail-card-role').innerHTML = roleBadge(u.role);
-            document.getElementById('detail-email').textContent = u.email;
-            document.getElementById('detail-role').innerHTML = roleBadge(u.role);
-            document.getElementById('detail-status').innerHTML = statusBadge(u.status);
-            document.getElementById('detail-created').textContent = u.created;
-            document.getElementById('detail-location').textContent = u.location;
-            document.getElementById('detail-sessions').textContent = u.sessions;
-            document.getElementById('detail-actions').textContent = u.actions;
-            document.getElementById('detail-last-login').textContent = u.lastLogin;
-
-            const times = ['Il y a 1h', 'Il y a 3h', 'Hier 18:42', 'Hier 09:11'];
-            document.getElementById('detail-activity').innerHTML = u.activity.map((a, i) => `
-        <li class="activity-item">
-          <div class="activity-dot"></div>
-          <span>${a}</span>
-          <span class="activity-time">${times[i] || '—'}</span>
-        </li>
-      `).join('');
-
-            showView('view-detail');
-        }
-
+        /* ─────────────────────────────────────────────────────────
+           VIEW ROUTER
+        ───────────────────────────────────────────────────────── */
         function showView(id) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             window.scrollTo(0, 0);
+
+            if (id === 'view-list') loadUsers();
+            if (id === 'view-add') resetForm();
         }
 
-        renderList();
+        /* ─────────────────────────────────────────────────────────
+           LIST VIEW
+        ───────────────────────────────────────────────────────── */
+        async function loadUsers() {
+            renderSkeletons();
+
+            try {
+                const res = await api.getUsers({
+                    page: state.currentPage,
+                    limit: state.limit,
+                    status: state.statusFilter,
+                    search: state.searchQuery,
+                });
+
+                state.total = res.meta.total;
+                state.totalPages = res.meta.totalPages;
+
+                document.getElementById('totalBadge').textContent = res.meta.total;
+
+                renderTable(res.data);
+                renderPagination(res.meta);
+            } catch (err) {
+                renderError(err.message);
+            }
+        }
+
+        function renderSkeletons() {
+            const tbody = document.getElementById('userTableBody');
+            tbody.innerHTML = Array.from({ length: 5 }, () => `
+      <tr class="sk-row">
+        <td><div class="avatar-wrap"><div class="avatar sk-avatar skeleton"></div><div class="sk-line sk-long skeleton"></div></div></td>
+        <td><div class="sk-line sk-med skeleton"></div></td>
+        <td><div class="sk-line sk-short skeleton"></div></td>
+        <td><div class="sk-line sk-short skeleton"></div></td>
+        <td><div class="sk-line sk-short skeleton"></div></td>
+        <td></td>
+      </tr>
+    `).join('');
+            document.getElementById('tableState').innerHTML = '';
+            document.getElementById('paginationBar').style.display = 'none';
+        }
+
+        function renderTable(users) {
+            const tbody = document.getElementById('userTableBody');
+            const state_ = document.getElementById('tableState');
+
+            if (!users.length) {
+                tbody.innerHTML = '';
+                state_.innerHTML = `<div class="state-box"><strong>Aucun résultat</strong>Essayez de modifier vos filtres ou votre recherche.</div>`;
+                document.getElementById('paginationBar').style.display = 'none';
+                return;
+            }
+
+            state_.innerHTML = '';
+            tbody.innerHTML = users.map(u => `
+      <tr onclick="showDetail('${u.id}')">
+        <td>
+          <div class="avatar-wrap">
+            <div class="avatar">${initials(u)}</div>
+            <span class="td-name">${u.firstName} ${u.lastName}</span>
+          </div>
+        </td>
+        <td class="td-mono">${u.email}</td>
+        <td>${roleBadge(u.role)}</td>
+        <td>${statusBadge(u.status)}</td>
+        <td style="color:var(--text-secondary);font-size:12px">${fmtDate(u.createdAt)}</td>
+        <td>
+          <div class="row-actions" onclick="event.stopPropagation()">
+            <button class="btn btn-sm" onclick="showDetail('${u.id}')">Voir</button>
+            <button class="btn btn-sm btn-danger" onclick="askDeleteById('${u.id}', '${u.firstName} ${u.lastName}')">Suppr.</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+        }
+
+        function renderPagination(meta) {
+            const bar = document.getElementById('paginationBar');
+            if (meta.totalPages <= 1 && meta.total <= state.limit) {
+                bar.style.display = 'none';
+                return;
+            }
+            bar.style.display = 'flex';
+            const from = (meta.page - 1) * meta.limit + 1;
+            const to = Math.min(meta.page * meta.limit, meta.total);
+            document.getElementById('paginationInfo').textContent = `${from}–${to} sur ${meta.total}`;
+            document.getElementById('prevBtn').disabled = meta.page <= 1;
+            document.getElementById('nextBtn').disabled = meta.page >= meta.totalPages;
+        }
+
+        function renderError(msg) {
+            document.getElementById('userTableBody').innerHTML = '';
+            document.getElementById('tableState').innerHTML = `
+      <div class="state-box">
+        <strong>Impossible de charger les données</strong>
+        ${msg}<br><br>
+        <button class="btn" onclick="loadUsers()">Réessayer</button>
+      </div>`;
+        }
+
+        /* ── Filtres & recherche ── */
+        function setStatusFilter(btn, status) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.statusFilter = status;
+            state.currentPage = 1;
+            loadUsers();
+        }
+
+        function changePage(dir) {
+            state.currentPage = Math.max(1, Math.min(state.totalPages, state.currentPage + dir));
+            loadUsers();
+        }
+
+        // Debounce search
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('searchInput').addEventListener('input', e => {
+                clearTimeout(state.searchTimer);
+                state.searchTimer = setTimeout(() => {
+                    state.searchQuery = e.target.value.trim();
+                    state.currentPage = 1;
+                    loadUsers();
+                }, 350);
+            });
+        });
+
+        /* ─────────────────────────────────────────────────────────
+           DETAIL VIEW
+        ───────────────────────────────────────────────────────── */
+        async function showDetail(id) {
+            state.currentUserId = id;
+            showView('view-detail');
+
+            // Reset fields
+            ['detailName', 'detailEmailHeader', 'detailCardName', 'detailEmail',
+                'detailId', 'detailCreatedAt', 'detailUpdatedAt'].forEach(k => {
+                    document.getElementById(k).textContent = '…';
+                });
+            document.getElementById('detailAvatarLg').textContent = '…';
+
+            try {
+                const { data: u } = await api.getUserById(id);
+
+                document.getElementById('detailBreadcrumb').textContent = `${u.firstName} ${u.lastName}`;
+                document.getElementById('detailName').textContent = `${u.firstName} ${u.lastName}`;
+                document.getElementById('detailEmailHeader').textContent = u.email;
+                document.getElementById('detailAvatarLg').textContent = initials(u);
+                document.getElementById('detailCardName').textContent = `${u.firstName} ${u.lastName}`;
+                document.getElementById('detailCardRole').innerHTML = roleBadge(u.role);
+                document.getElementById('detailEmail').textContent = u.email;
+                document.getElementById('detailRole').innerHTML = roleBadge(u.role);
+                document.getElementById('detailStatus').innerHTML = statusBadge(u.status);
+                document.getElementById('detailLocation').textContent = u.location || '—';
+                document.getElementById('detailId').textContent = u.id;
+                document.getElementById('detailCreatedAt').textContent = fmtDate(u.createdAt);
+                document.getElementById('detailUpdatedAt').textContent = fmtDate(u.updatedAt);
+
+                const noteRow = document.getElementById('detailNoteRow');
+                if (u.note) {
+                    noteRow.style.display = 'block';
+                    document.getElementById('detailNote').textContent = u.note;
+                } else {
+                    noteRow.style.display = 'none';
+                }
+
+                document.getElementById('detailMeta').innerHTML = [
+                    ['ID', u.id],
+                    ['Email', u.email],
+                    ['Rôle', u.role],
+                    ['Statut', u.status],
+                    ['Localisation', u.location || '—'],
+                    ['Créé le', fmtDatetime(u.createdAt)],
+                    ['Modifié le', fmtDatetime(u.updatedAt)],
+                ].map(([k, v]) => `
+        <li class="meta-item">
+          <span class="meta-key">${k}</span>
+          <span class="meta-val">${v}</span>
+        </li>
+      `).join('');
+
+            } catch (err) {
+                toast(err.message, 'error');
+                showView('view-list');
+            }
+        }
+
+        /* ─────────────────────────────────────────────────────────
+           DELETE
+        ───────────────────────────────────────────────────────── */
+        let _deleteId = null;
+        let _deleteName = null;
+
+        function askDelete() {
+            askDeleteById(state.currentUserId, document.getElementById('detailName').textContent);
+        }
+
+        function askDeleteById(id, name) {
+            _deleteId = id;
+            _deleteName = name;
+            document.getElementById('confirmModalBody').textContent =
+                `Supprimer "${name}" ? Cette action est irréversible.`;
+            document.getElementById('confirmModal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').classList.remove('open');
+            _deleteId = _deleteName = null;
+        }
+
+        async function confirmDelete() {
+            const btn = document.getElementById('confirmModalBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>';
+
+            try {
+                await api.deleteUser(_deleteId);
+                toast(`${_deleteName} supprimé.`, 'success');
+                closeModal();
+                state.currentUserId = null;
+                state.currentPage = 1;
+                showView('view-list');
+            } catch (err) {
+                toast(err.message, 'error');
+                btn.disabled = false;
+                btn.textContent = 'Supprimer';
+            }
+        }
+
+        /* ─────────────────────────────────────────────────────────
+           CREATE FORM
+        ───────────────────────────────────────────────────────── */
+        function resetForm() {
+            ['f-firstName', 'f-lastName', 'f-email', 'f-location', 'f-note'].forEach(id => {
+                document.getElementById(id).value = '';
+                document.getElementById(id).classList.remove('error');
+            });
+            ['e-firstName', 'e-lastName', 'e-email'].forEach(id => {
+                document.getElementById(id).textContent = '';
+            });
+            document.getElementById('f-role').value = 'USER';
+            document.getElementById('f-status').value = 'ACTIVE';
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = false;
+            document.getElementById('submitLabel').textContent = "Créer l'utilisateur";
+        }
+
+        function validateForm() {
+            let valid = true;
+
+            const fields = [
+                { id: 'f-firstName', err: 'e-firstName', label: 'Le prénom est requis.' },
+                { id: 'f-lastName', err: 'e-lastName', label: 'Le nom est requis.' },
+                { id: 'f-email', err: 'e-email', label: "L'email est requis.", type: 'email' },
+            ];
+
+            fields.forEach(({ id, err, label, type }) => {
+                const el = document.getElementById(id);
+                const errEl = document.getElementById(err);
+                const val = el.value.trim();
+
+                if (!val) {
+                    el.classList.add('error');
+                    errEl.textContent = label;
+                    valid = false;
+                } else if (type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                    el.classList.add('error');
+                    errEl.textContent = "Format d'email invalide.";
+                    valid = false;
+                } else {
+                    el.classList.remove('error');
+                    errEl.textContent = '';
+                }
+            });
+
+            return valid;
+        }
+
+        async function submitCreate() {
+            if (!validateForm()) return;
+
+            const btn = document.getElementById('submitBtn');
+            const label = document.getElementById('submitLabel');
+            btn.disabled = true;
+            label.innerHTML = '<span class="spinner"></span> Création…';
+
+            const body = {
+                firstName: document.getElementById('f-firstName').value.trim(),
+                lastName: document.getElementById('f-lastName').value.trim(),
+                email: document.getElementById('f-email').value.trim(),
+                location: document.getElementById('f-location').value.trim() || undefined,
+                role: document.getElementById('f-role').value,
+                status: document.getElementById('f-status').value,
+                note: document.getElementById('f-note').value.trim() || undefined,
+            };
+
+            try {
+                const { data } = await api.createUser(body);
+                toast(`${data.firstName} ${data.lastName} créé avec succès.`, 'success');
+                showView('view-list');
+            } catch (err) {
+                // Affiche les erreurs de validation du backend dans les champs
+                if (err.status === 422 && err.data?.errors) {
+                    err.data.errors.forEach(e => {
+                        const fieldMap = { firstName: 'f-firstName', lastName: 'f-lastName', email: 'f-email' };
+                        const fieldId = fieldMap[e.field];
+                        if (fieldId) {
+                            document.getElementById(fieldId).classList.add('error');
+                            document.getElementById('e-' + fieldId.replace('f-', '')).textContent = e.message;
+                        }
+                    });
+                } else if (err.status === 409) {
+                    document.getElementById('f-email').classList.add('error');
+                    document.getElementById('e-email').textContent = 'Cet email est déjà utilisé.';
+                } else {
+                    toast(err.message, 'error');
+                }
+
+                btn.disabled = false;
+                label.textContent = "Créer l'utilisateur";
+            }
+        }
+
+        /* ─────────────────────────────────────────────────────────
+           INIT
+        ───────────────────────────────────────────────────────── */
+        loadUsers();
     </script>
 </body>
 
