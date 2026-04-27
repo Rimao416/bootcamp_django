@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Users CRUD — V1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f7f5;
+            --bg-tertiary: #f0efe9;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b6b6b;
+            --border-light: rgba(0, 0, 0, 0.08);
+            --border-medium: rgba(0, 0, 0, 0.15);
+            --border-strong: rgba(0, 0, 0, 0.25);
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            background: var(--bg-primary);
+            border-bottom: 0.5px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-primary);
+        }
+
+        .logo-text {
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sep {
+            color: var(--border-medium);
+            margin: 0 2px;
+        }
+
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 7px 14px;
+            border-radius: 6px;
+            border: 0.5px solid var(--border-medium);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background 0.12s;
+        }
+
+        .btn:hover {
+            background: var(--bg-secondary);
+        }
+
+        .btn-primary {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border-color: var(--text-primary);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.82;
+            background: var(--text-primary);
+        }
+
+        .btn-ghost {
+            border-color: transparent;
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-secondary);
+        }
+
+        .btn-danger {
+            color: #c0392b;
+            border-color: #e8b4b0;
+        }
+
+        .btn-danger:hover {
+            background: #fdf0ef;
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            padding: 28px 24px 20px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 500;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 3px;
+        }
+
+        .count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border: 0.5px solid var(--border-light);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            color: var(--text-secondary);
+            margin-left: 6px;
+        }
+
+        /* ── TABS ── */
+        .tab-nav {
+            display: flex;
+            gap: 2px;
+        }
+
+        .tab-btn {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 7px 14px;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 0.5px solid var(--border-light);
+        }
+
+        /* ── SEARCH ── */
+        .search-bar {
+            padding: 0 24px 16px;
+        }
+
+        .search-input {
+            width: 100%;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            padding: 9px 14px;
+            border: 0.5px solid var(--border-medium);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .search-input:focus {
+            border-color: var(--border-strong);
+        }
+
+        /* ── TABLE ── */
+        .table-wrap {
+            margin: 0 24px;
+            background: var(--bg-primary);
+            border: 0.5px solid var(--border-light);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            padding: 11px 18px;
+            text-align: left;
+            border-bottom: 0.5px solid var(--border-light);
+            background: var(--bg-secondary);
+        }
+
+        tbody tr {
+            border-bottom: 0.5px solid var(--border-light);
+            transition: background 0.1s;
+            cursor: pointer;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        td {
+            padding: 13px 18px;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .td-name {
+            font-weight: 500;
+        }
+
+        .td-mono {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* ── AVATAR ── */
+        .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 500;
+            background: #e8f0fe;
+            color: #1a56db;
+            flex-shrink: 0;
+        }
+
+        .avatar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar-lg {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 500;
+            background: #e8f0fe;
+            color: #1a56db;
+        }
+
+        /* ── BADGES ── */
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 9px;
+            border-radius: 20px;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-inactive {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+
+        .badge-admin {
+            background: #ede7f6;
+            color: #4527a0;
+        }
+
+        .badge-user {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+
+        .badge-mod {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        /* ── ROW ACTIONS ── */
+        .row-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        /* ── DETAIL VIEW ── */
+        .detail-wrap {
+            margin: 0 24px;
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--bg-primary);
+            border: 0.5px solid var(--border-light);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 24px 20px 20px;
+            border-bottom: 0.5px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-name {
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .card-role-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .card-body {
+            padding: 16px 20px;
+        }
+
+        .field-row {
+            margin-bottom: 14px;
+        }
+
+        .field-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .field-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .field-value {
+            font-size: 13px;
+        }
+
+        .field-mono {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+        }
+
+        .card-main {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* ── STATS ── */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 14px 16px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 500;
+        }
+
+        .stat-value-sm {
+            font-size: 15px;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* ── ACTIVITY ── */
+        .section-head {
+            padding: 16px 20px 12px;
+            border-bottom: 0.5px solid var(--border-light);
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 11px 20px;
+            border-bottom: 0.5px solid var(--border-light);
+            font-size: 13px;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .activity-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-left: auto;
+            white-space: nowrap;
+            font-family: 'DM Mono', monospace;
+        }
+
+        /* ── FORM ── */
+        .form-wrap {
+            margin: 0 24px;
+        }
+
+        .form-card {
+            background: var(--bg-primary);
+            border: 0.5px solid var(--border-light);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 20px 24px;
+            border-bottom: 0.5px solid var(--border-light);
+        }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .form-section-title {
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            padding: 9px 12px;
+            border: 0.5px solid var(--border-medium);
+            border-radius: 7px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--text-primary);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-footer {
+            padding: 16px 24px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            border-top: 0.5px solid var(--border-light);
+        }
+
+        /* ── BOTTOM SPACING ── */
+        .spacer {
+            height: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ════════════════════════════════════
+       VIEW — LISTE
+  ════════════════════════════════════ -->
+    <div class="view active" id="view-list">
+        <nav class="topbar">
+            <div class="topbar-left">
+                <div class="logo-dot"></div>
+                <span class="logo-text">Users</span>
+            </div>
+            <div class="topbar-right">
+                <button class="btn btn-primary" onclick="showView('view-add')">+ Nouvel utilisateur</button>
+            </div>
+        </nav>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Utilisateurs <span class="count-badge">6</span></h1>
+                <p class="page-subtitle">Gérez les comptes et les accès</p>
+            </div>
+            <div class="tab-nav">
+                <button class="tab-btn active">Tous</button>
+                <button class="tab-btn">Actifs</button>
+                <button class="tab-btn">Admins</button>
+            </div>
+        </div>
+
+        <div class="search-bar">
+            <input class="search-input" type="text" placeholder="Rechercher par nom, email ou rôle…" />
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Utilisateur</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Statut</th>
+                        <th>Créé le</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="user-list"></tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- ════════════════════════════════════
+       VIEW — DÉTAIL
+  ════════════════════════════════════ -->
+    <div class="view" id="view-detail">
+        <nav class="topbar">
+            <div class="topbar-left">
+                <button class="btn btn-ghost" onclick="showView('view-list')">← Retour</button>
+                <span class="sep">|</span>
+                <span class="logo-text" id="detail-breadcrumb">Utilisateur</span>
+            </div>
+            <div class="topbar-right">
+                <button class="btn">Modifier</button>
+                <button class="btn btn-danger">Supprimer</button>
+            </div>
+        </nav>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title" id="detail-name">—</h1>
+                <p class="page-subtitle" id="detail-email-header">—</p>
+            </div>
+        </div>
+
+        <div class="detail-wrap">
+            <!-- Sidebar profil -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="avatar-lg" id="detail-avatar-lg">—</div>
+                    <div class="card-name" id="detail-card-name">—</div>
+                    <span class="card-role-label" id="detail-card-role"></span>
+                </div>
+                <div class="card-body">
+                    <div class="field-row">
+                        <div class="field-label">Email</div>
+                        <div class="field-value field-mono" id="detail-email">—</div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Rôle</div>
+                        <div class="field-value" id="detail-role">—</div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Statut</div>
+                        <div class="field-value" id="detail-status">—</div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Membre depuis</div>
+                        <div class="field-value" id="detail-created">—</div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Localisation</div>
+                        <div class="field-value" id="detail-location">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenu principal -->
+            <div class="card-main">
+                <!-- Stats -->
+                <div class="card">
+                    <div class="stat-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Sessions</div>
+                            <div class="stat-value" id="detail-sessions">—</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Actions</div>
+                            <div class="stat-value" id="detail-actions">—</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Dernière connexion</div>
+                            <div class="stat-value-sm" id="detail-last-login">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activité -->
+                <div class="card">
+                    <div class="section-head">Activité récente</div>
+                    <ul class="activity-list" id="detail-activity"></ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="spacer"></div>
+    </div>
+
+
+    <!-- ════════════════════════════════════
+       VIEW — AJOUT
+  ════════════════════════════════════ -->
+    <div class="view" id="view-add">
+        <nav class="topbar">
+            <div class="topbar-left">
+                <button class="btn btn-ghost" onclick="showView('view-list')">← Retour</button>
+                <span class="sep">|</span>
+                <span class="logo-text">Nouvel utilisateur</span>
+            </div>
+        </nav>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Créer un utilisateur</h1>
+                <p class="page-subtitle">Remplissez les informations ci-dessous</p>
+            </div>
+        </div>
+
+        <div class="form-wrap">
+            <div class="form-card">
+
+                <div class="form-section">
+                    <div class="form-section-title">Informations personnelles</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Prénom</label>
+                            <input class="form-input" type="text" placeholder="Jean" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nom</label>
+                            <input class="form-input" type="text" placeholder="Dupont" />
+                        </div>
+                        <div class="form-group full">
+                            <label class="form-label">Email</label>
+                            <input class="form-input" type="email" placeholder="jean.dupont@example.com" />
+                        </div>
+                        <div class="form-group full">
+                            <label class="form-label">Localisation</label>
+                            <input class="form-input" type="text" placeholder="Paris, France" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Accès et permissions</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Rôle</label>
+                            <select class="form-select">
+                                <option>Utilisateur</option>
+                                <option>Modérateur</option>
+                                <option>Admin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Statut initial</label>
+                            <select class="form-select">
+                                <option>Actif</option>
+                                <option>Inactif</option>
+                            </select>
+                        </div>
+                        <div class="form-group full">
+                            <label class="form-label">Mot de passe temporaire</label>
+                            <input class="form-input" type="password" placeholder="••••••••••" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Note interne (optionnel)</div>
+                    <div class="form-group">
+                        <textarea class="form-textarea"
+                            placeholder="Contexte, source de recrutement, remarques…"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button class="btn" onclick="showView('view-list')">Annuler</button>
+                    <button class="btn btn-primary" onclick="showView('view-list')">Créer l'utilisateur</button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="spacer"></div>
+    </div>
+
+
+    <!-- ════════════════════════════════════
+       JAVASCRIPT
+  ════════════════════════════════════ -->
+    <script>
+        const users = [
+            {
+                id: 1, first: 'Amara', last: 'Diallo', email: 'amara.diallo@mail.com',
+                role: 'Admin', status: 'active', created: '12 jan. 2024', location: 'Abidjan, CI',
+                sessions: 142, actions: 318, lastLogin: 'Hier',
+                activity: ['Connexion depuis Chrome', 'Modifié les paramètres', 'Ajouté 3 utilisateurs', 'Export CSV lancé']
+            },
+            {
+                id: 2, first: 'Sophie', last: 'Martin', email: 's.martin@mail.com',
+                role: 'Utilisateur', status: 'active', created: '03 mar. 2024', location: 'Paris, FR',
+                sessions: 54, actions: 91, lastLogin: 'Il y a 2 j.',
+                activity: ['Connexion depuis Safari', 'Mis à jour son profil', 'Téléchargé un rapport']
+            },
+            {
+                id: 3, first: 'Elias', last: 'Kofi', email: 'e.kofi@mail.com',
+                role: 'Modérateur', status: 'active', created: '28 fév. 2024', location: 'Accra, GH',
+                sessions: 78, actions: 203, lastLogin: "Aujourd'hui",
+                activity: ['Connexion depuis Firefox', 'Modéré 12 contenus', 'Signalement traité']
+            },
+            {
+                id: 4, first: 'Lena', last: 'Müller', email: 'lena.m@mail.com',
+                role: 'Utilisateur', status: 'inactive', created: '07 avr. 2024', location: 'Berlin, DE',
+                sessions: 12, actions: 24, lastLogin: 'Il y a 14 j.',
+                activity: ['Connexion depuis Edge', 'Consulté le tableau de bord']
+            },
+            {
+                id: 5, first: 'Carlos', last: 'Reyes', email: 'c.reyes@mail.com',
+                role: 'Admin', status: 'active', created: '19 mai 2024', location: 'Bogotá, CO',
+                sessions: 209, actions: 541, lastLogin: "Aujourd'hui",
+                activity: ['Connexion depuis Chrome', 'Créé une campagne', 'Modifié 5 utilisateurs', 'Consulté les logs']
+            },
+            {
+                id: 6, first: 'Nadia', last: 'Okonkwo', email: 'n.okonkwo@mail.com',
+                role: 'Utilisateur', status: 'inactive', created: '02 juin 2024', location: 'Lagos, NG',
+                sessions: 7, actions: 11, lastLogin: 'Il y a 30 j.',
+                activity: ['Inscription', 'Profil complété']
+            }
+        ];
+
+        function initials(u) { return (u.first[0] + u.last[0]).toUpperCase(); }
+
+        function roleBadge(r) {
+            const cls = r === 'Admin' ? 'badge-admin' : r === 'Modérateur' ? 'badge-mod' : 'badge-user';
+            return `<span class="badge ${cls}">${r}</span>`;
+        }
+
+        function statusBadge(s) {
+            return s === 'active'
+                ? '<span class="badge badge-active">Actif</span>'
+                : '<span class="badge badge-inactive">Inactif</span>';
+        }
+
+        function renderList() {
+            const tbody = document.getElementById('user-list');
+            const times = ['Il y a 1h', 'Il y a 3h', 'Hier 18:42', 'Hier 09:11'];
+            tbody.innerHTML = users.map(u => `
+        <tr onclick="showDetail(${u.id})">
+          <td>
+            <div class="avatar-wrap">
+              <div class="avatar">${initials(u)}</div>
+              <span class="td-name">${u.first} ${u.last}</span>
+            </div>
+          </td>
+          <td class="td-mono">${u.email}</td>
+          <td>${roleBadge(u.role)}</td>
+          <td>${statusBadge(u.status)}</td>
+          <td style="color:var(--text-secondary);font-size:12px">${u.created}</td>
+          <td>
+            <div class="row-actions" onclick="event.stopPropagation()">
+              <button class="btn" style="padding:5px 10px;font-size:12px" onclick="showDetail(${u.id})">Voir</button>
+              <button class="btn btn-danger" style="padding:5px 10px;font-size:12px">Suppr.</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+        }
+
+        function showDetail(id) {
+            const u = users.find(x => x.id === id);
+            if (!u) return;
+
+            document.getElementById('detail-breadcrumb').textContent = u.first + ' ' + u.last;
+            document.getElementById('detail-name').textContent = u.first + ' ' + u.last;
+            document.getElementById('detail-email-header').textContent = u.email;
+            document.getElementById('detail-avatar-lg').textContent = initials(u);
+            document.getElementById('detail-card-name').textContent = u.first + ' ' + u.last;
+            document.getElementById('detail-card-role').innerHTML = roleBadge(u.role);
+            document.getElementById('detail-email').textContent = u.email;
+            document.getElementById('detail-role').innerHTML = roleBadge(u.role);
+            document.getElementById('detail-status').innerHTML = statusBadge(u.status);
+            document.getElementById('detail-created').textContent = u.created;
+            document.getElementById('detail-location').textContent = u.location;
+            document.getElementById('detail-sessions').textContent = u.sessions;
+            document.getElementById('detail-actions').textContent = u.actions;
+            document.getElementById('detail-last-login').textContent = u.lastLogin;
+
+            const times = ['Il y a 1h', 'Il y a 3h', 'Hier 18:42', 'Hier 09:11'];
+            document.getElementById('detail-activity').innerHTML = u.activity.map((a, i) => `
+        <li class="activity-item">
+          <div class="activity-dot"></div>
+          <span>${a}</span>
+          <span class="activity-time">${times[i] || '—'}</span>
+        </li>
+      `).join('');
+
+            showView('view-detail');
+        }
+
+        function showView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        renderList();
+    </script>
+</body>
+
+</html>
