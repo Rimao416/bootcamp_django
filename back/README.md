@@ -41,6 +41,26 @@ prisma/
 
 ---
 
+## Configuration (Variables d'environnement)
+
+Le projet utilise un fichier `.env` pour sa configuration. Un modèle est disponible dans [`.env.example`](.env.example).
+
+| Variable | Description | Valeur par défaut |
+| :--- | :--- | :--- |
+| `PORT` | Port d'écoute du serveur Express | `3000` |
+| `NODE_ENV` | Environnement (`development`, `production`, `test`) | `development` |
+| `DATABASE_URL` | URL de connexion PostgreSQL (Prisma) | `postgresql://...` |
+| `CORS_ORIGIN` | Origine autorisée pour les requêtes CORS | `*` |
+
+---
+
+
+Variable	Description	Valeur par défaut / Exemple
+PORT	Le port sur lequel le serveur Express va écouter.	3000
+NODE_ENV	Mode de l'application (development, production, test).	development
+DATABASE_URL	URL de connexion à la base de données PostgreSQL (utilisée par Prisma).	postgresql://postgres:postgres@localhost:5432/users_crud
+CORS_ORIGIN	Définit les origines autorisées pour les requêtes CORS.	* (ou une URL précise en prod)
+
 ## Démarrage rapide (développement)
 
 ```bash
